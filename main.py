@@ -1,5 +1,6 @@
+import os
 import sqlite3
-from flask import Flask, redirect, request, render_template, flash, g
+from flask import Flask, redirect, request, render_template, flash, g, url_for
 from db import Database
 
 
@@ -51,6 +52,14 @@ def get_link(link):
 		return redirect(dbase.get_link(link)['true_url'])
 	except TypeError:
 		return 'Такой ссылки нет!'
+
+@app.route('/create_link',methods=['POST','GET'])
+def create_link():
+	db = get_db()
+	dbase = Database(db)
+	print(request.args.get('link'),request.args.get('redirect_link'))
+	dbase.add_link(request.args.get('link'),request.args.get('redirect_link'))
+	return redirect(url_for('index'))
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 4997))
