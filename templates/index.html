@@ -3,8 +3,8 @@
 	<title>{{ title }}</title>
 </head>
 <body>
-	{% for msg in get_flashed_messages() %}
-		<h1>{{ msg }}</h1>
+	{% for category,msg in get_flashed_messages(True) %}
+		<h1 class="flash {{cat}}">{{ msg }}</h1>
 	{% endfor %}
 	<form action="/" method="POST">
 		<h1>Введите ссылку!</h1>
