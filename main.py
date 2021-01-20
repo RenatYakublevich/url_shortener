@@ -2,11 +2,14 @@ import os
 import sqlite3
 from flask import Flask, redirect, request, render_template, flash, g, url_for
 from db import Database
+import requests
 
 
 DATABASE_FILE = 'db.db'
 DEBUG = True
 SECRET_KEY = 'xzf39d7348yfui'
+HOST = 'http://127.0.0.1'
+PORT = '4997'
 
 
 app = Flask(__name__)
@@ -23,22 +26,21 @@ def get_db():
 		g.link_db = connect_db()
 	return g.link_db
 
+def validation_link(link: str) -> bool:
+	if link.startswith('https://'):
+		return True
+
 @app.teardown_appcontext
 def close_db(error):
 	if hasattr(g, 'link_db'):
 		g.link_db.close()
 
-
-
 @app.route('/',methods=['POST','GET'])
 def index():
 	if request.method == 'POST':
-		if request.form['link'].startswith('https://') and len(request.form['rlink']) < 32:
-			db = get_db()
-			dbase = Database(db)
+		if validation_link(request.form['link']):
+			requests.post(f'{HOST}:{PORT}{url_for("create_link")}',params={'link': request.form['link'], 'redirect_link': request.form['rlink']})
 			flash('Ссылка успешно добавлена!')
-			print(request.form['link'],request.form['rlink'])
-			dbase.add_link(request.form['link'],request.form['rlink'])
 		else:
 			flash('Ошибка добавления')
 
@@ -61,6 +63,5 @@ def create_link():
 	dbase.add_link(request.args.get('link'),request.args.get('redirect_link'))
 	return redirect(url_for('index'))
 
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 4997))
-    app.run(port=port,debug=True)
+if __name__ == '__main__': 
+    app.run(port=PORT,debug=DEBUG)
