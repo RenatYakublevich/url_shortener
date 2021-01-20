@@ -1,0 +1,15 @@
+<html>
+<head>
+	<title>{{ title }}</title>
+</head>
+<body>
+	{% for msg in get_flashed_messages() %}
+		<h1>{{ msg }}</h1>
+	{% endfor %}
+	<form action="/" method="POST">
+		<h1>Введите ссылку!</h1>
+		<input type="text" name="link">
+		<input type="text" name="rlink">
+		<input type="submit" value='Отправить'>
+	</form>
+</body>
